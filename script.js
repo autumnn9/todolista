@@ -6,28 +6,60 @@ document.addEventListener("DOMContentLoaded", () => {
 
     taskForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        const taskValue = taskInput.value.trim();
-        if (!taskValue) return;
-
-        const formData = new FormData();
-        formData.append("nazwa", taskValue);
-        formData.append("type", taskType.value);
-
-        fetch("index.php", { method: "POST", body: formData })
-            .then(() => location.reload());
+        const formData = new FormData(taskForm);
+        fetch("index.php", { method: "POST", body: formData }).then(() => location.reload());
     });
 
     taskList.addEventListener("click", (e) => {
+        const taskItem = e.target.closest("li");
+        const taskId = taskItem.dataset.id;
+
         if (e.target.classList.contains("delete")) {
-            const taskItem = e.target.closest("li");
-            const taskId = taskItem.dataset.id;
+            fetch("index.php", { 
+                method: "POST", 
+                body: new URLSearchParams({ action: "delete", id: taskId }) 
+            }).then(() => taskItem.remove());
+        }
 
-            const formData = new FormData();
-            formData.append("action", "delete");
-            formData.append("id", taskId);
+        if (e.target.classList.contains("edit")) {
+            const nameEl = taskItem.querySelector(".task-name");
+            const typeEl = taskItem.querySelector(".task-type");
 
-            fetch("index.php", { method: "POST", body: formData })
-                .then(() => taskItem.remove());
+            const newName = prompt("Edytuj nazwę:", nameEl.textContent);
+            if (!newName) return;
+
+            fetch("index.php", { 
+                method: "POST", 
+                body: new URLSearchParams({ 
+                    action: "edit", 
+                    id: taskId, 
+                    nazwa: newName, 
+                    type: typeEl.textContent 
+                }) 
+            }).then(() => {
+                nameEl.textContent = newName;
+            });
+        }
+
+        if (e.target.classList.contains("addComment")) {
+            const commentInput = taskItem.querySelector(".commentInput");
+            const commentText = commentInput.value.trim();
+            if (!commentText) return;
+
+            fetch("index.php", { 
+                method: "POST", 
+                body: new URLSearchParams({ 
+                    action: "comment", 
+                    task_id: taskId, 
+                    tresc: commentText 
+                }) 
+            }).then(() => {
+                const commentsList = taskItem.querySelector(".comments");
+                const newComment = document.createElement("li");
+                newComment.textContent = commentText;
+                commentsList.appendChild(newComment);
+                commentInput.value = "";
+            });
         }
     });
 
