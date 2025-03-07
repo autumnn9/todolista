@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 05, 2025 at 09:32 AM
+-- Generation Time: Mar 07, 2025 at 08:41 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -34,13 +34,6 @@ CREATE TABLE `komentarze` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `komentarze`
---
-
-INSERT INTO `komentarze` (`id`, `task_id`, `tresc`, `created_at`) VALUES
-(2, 98, 'qwerty', '2025-03-05 08:28:59');
-
 -- --------------------------------------------------------
 
 --
@@ -52,17 +45,11 @@ CREATE TABLE `lista` (
   `nazwa` varchar(255) NOT NULL,
   `type` varchar(50) NOT NULL,
   `date` timestamp NOT NULL DEFAULT current_timestamp(),
-  `opis` text NOT NULL
+  `opis` text NOT NULL,
+  `status` enum('nowe','w trakcie','gotowe') DEFAULT 'nowe',
+  `priority` enum('niski','średni','wysoki') DEFAULT 'średni',
+  `planned_date` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `lista`
---
-
-INSERT INTO `lista` (`id`, `nazwa`, `type`, `date`, `opis`) VALUES
-(96, '3', 'praca', '2025-03-05 08:28:39', ''),
-(97, '2', 'dom', '2025-03-05 08:28:41', ''),
-(98, '1', 'inne', '2025-03-05 08:28:44', '');
 
 --
 -- Indexes for dumped tables
@@ -89,13 +76,13 @@ ALTER TABLE `lista`
 -- AUTO_INCREMENT for table `komentarze`
 --
 ALTER TABLE `komentarze`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `lista`
 --
 ALTER TABLE `lista`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=99;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=119;
 
 --
 -- Constraints for dumped tables
