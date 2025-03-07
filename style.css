@@ -48,19 +48,66 @@ ul {
 }
 
 li {
-    padding: 8px;
+    padding: 15px;
     border: 2px solid black;
     background: #e0e0e0;
-    margin-bottom: 5px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.task-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    width: 100%;
+    align-items: center;
+    font-size: 16px;
+}
+
+.task-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.task-status, .task-priority, .task-date {
+    font-weight: bold;
 }
 
 .comments {
-    margin-top: 5px;
-    padding-left: 15px;
-    font-size: 12px;
+    width: 100%;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 2px dashed gray;
+}
+
+.comments li {
+    display: flex;
+    justify-content: space-between;
+    background: #f0f0f0;
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
 }
 
 .commentInput {
-    width: 80%;
-    padding: 5px;
+    width: 100%;
+    padding: 8px;
+    margin-top: 10px;
+}
+
+.deleteComment {
+    background: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    font-size: 12px;
+    border-radius: 4px;
+}
+
+.deleteComment:hover {
+    background: darkred;
 }
