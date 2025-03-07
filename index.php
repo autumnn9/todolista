@@ -5,7 +5,6 @@ $password = "";
 $dbname = "lista";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
-
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
@@ -22,12 +21,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    if ($action === 'delete_comment') {
+        $comment_id = intval($_POST['comment_id']);
+        $stmt = $conn->prepare("DELETE FROM komentarze WHERE id = ?");
+        $stmt->bind_param("i", $comment_id);
+        $stmt->execute();
+        $stmt->close();
+        exit;
+    }
+
     if ($action === 'edit') {
         $id = intval($_POST['id']);
         $nazwa = trim($_POST['nazwa']);
         $type = trim($_POST['type']);
-        $stmt = $conn->prepare("UPDATE lista SET nazwa = ?, type = ? WHERE id = ?");
-        $stmt->bind_param("ssi", $nazwa, $type, $id);
+        $status = $_POST['status'];
+        $priority = $_POST['priority'];
+        $planned_date = $_POST['planned_date'];
+
+        $stmt = $conn->prepare("UPDATE lista SET nazwa = ?, type = ?, status = ?, priority = ?, planned_date = ? WHERE id = ?");
+        $stmt->bind_param("sssssi", $nazwa, $type, $status, $priority, $planned_date, $id);
         $stmt->execute();
         $stmt->close();
         exit;
@@ -39,6 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $conn->prepare("INSERT INTO komentarze (task_id, tresc) VALUES (?, ?)");
         $stmt->bind_param("is", $task_id, $tresc);
         $stmt->execute();
+        echo $stmt->insert_id;
         $stmt->close();
         exit;
     }
@@ -52,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-$result = $conn->query("SELECT * FROM lista ORDER BY id DESC");
+$result = $conn->query("SELECT * FROM lista ORDER BY priority DESC, planned_date ASC");
 $tasks = [];
 while ($row = $result->fetch_assoc()) {
     $tasks[] = $row;
@@ -90,15 +103,21 @@ $conn->close();
 
         <ul id="taskList">
             <?php foreach ($tasks as $task): ?>
-                <li data-id="<?= $task['id'] ?>" draggable="true">
+                <li data-id="<?= $task['id'] ?>">
                     <span class="task-name"><?= htmlspecialchars($task['nazwa']) ?></span>
                     <span class="task-type"><?= htmlspecialchars($task['type']) ?></span>
+                    <span class="task-status">Status: <?= htmlspecialchars($task['status']) ?></span>
+                    <span class="task-priority">Priorytet: <?= htmlspecialchars($task['priority']) ?></span>
+                    <span class="task-date">Planowana data: <?= htmlspecialchars($task['planned_date'] ?? 'Brak') ?></span>
                     <button class="edit">✎</button>
                     <button class="delete">X</button>
 
                     <ul class="comments">
                         <?php foreach ($comments[$task['id']] ?? [] as $comment): ?>
-                            <li><?= htmlspecialchars($comment['tresc']) ?></li>
+                            <li>
+                                <?= htmlspecialchars($comment['tresc']) ?>
+                                <button class="deleteComment" data-comment-id="<?= $comment['id'] ?>">🗑</button>
+                            </li>
                         <?php endforeach; ?>
                     </ul>
 
